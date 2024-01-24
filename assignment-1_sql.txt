@@ -1,0 +1,102 @@
+CREATE TABLE Supplier(
+    Supplier_ID  int NOT NULL,
+    SupplierName varchar(255),
+    PRIMARY KEY (Supplier_ID)
+);
+
+CREATE TABLE Category(
+    Category_ID  int NOT NULL,
+    CategoryName varchar(255),
+    PRIMARY KEY (Category_ID)
+);
+
+CREATE TABLE products (
+    product_id int NOT NULL,
+    product_name character varying(40) NOT NULL,
+    supplier_id int,
+    category_id int,
+    quantity_per_unit character varying(20),
+    unit_price real,
+    units_in_stock int,
+    units_on_order smallint,
+    reorder_level smallint,
+    discontinued bool NOT NULL,
+	PRIMARY KEY (product_id),
+    FOREIGN KEY (supplier_id) REFERENCES Supplier(Supplier_ID)
+
+	FOREIGN KEY (category_id) REFERENCES Category(Category_ID)
+	
+);
+
+INSERT INTO category VALUES (1, 'Beverages');
+INSERT INTO category VALUES (2, 'Condiments');
+INSERT INTO category VALUES (3, 'Confections');
+INSERT INTO category VALUES (4, 'Dairy Products');
+INSERT INTO category VALUES (5, 'Grains/Cereals');
+INSERT INTO category VALUES (6, 'Meat/Poultry');
+INSERT INTO category VALUES (7, 'Produce');
+INSERT INTO category VALUES (8, 'Seafood');
+INSERT INTO category VALUES (9, 'category1');
+INSERT INTO category VALUES (10, 'category2');
+
+
+INSERT INTO Supplier VALUES (1, 'Supplier1');
+INSERT INTO Supplier VALUES (2, 'Supplier2');
+INSERT INTO Supplier VALUES (3, 'Supplier3');
+INSERT INTO Supplier VALUES (4, 'Supplier4');
+INSERT INTO Supplier VALUES (5, 'Supplier5');
+INSERT INTO Supplier VALUES (6, 'Supplier6');
+INSERT INTO Supplier VALUES (7, 'Supplier7');
+INSERT INTO Supplier VALUES (8, 'Supplier8');
+INSERT INTO Supplier VALUES (9, 'Supplier9');
+INSERT INTO Supplier VALUES (10,'Supplier10');
+
+
+INSERT INTO products VALUES (1, 'Chai', 1, 1, '10 boxes x 30 bags', 18, 39, 0, 10, 1);
+INSERT INTO products VALUES (2, 'Chang', 2, 2, '24 - 12 oz bottles', 19, 17, 40, 25, 1);
+INSERT INTO products VALUES (3, 'Aniseed Syrup', 3, 3, '12 - 550 ml bottles', 10, 13, 70, 25, 0);
+INSERT INTO products VALUES (4, 'Chef Anton''s Cajun Seasoning', 4, 4, '48 - 6 oz jars', 22, 53, 0, 0, 0);
+INSERT INTO products VALUES (5, 'Chef Anton''s Gumbo Mix', 5, 6, '36 boxes', 21.3500004, 0, 0, 0, 1);
+INSERT INTO products VALUES (6, 'Grandma''s Boysenberry Spread', 6, 7, '12 - 8 oz jars', 25, 120, 0, 25, 0);
+INSERT INTO products VALUES (7, 'Uncle Bob''s Organic Dried Pears', 8, 5, '12 - 1 lb pkgs.', 30, 15, 0, 10, 0);
+INSERT INTO products VALUES (8, 'Northwoods Cranberry Sauce', 7, 8, '12 - 12 oz jars', 40, 6, 0, 0, 0);
+INSERT INTO products VALUES (9, 'Mishi Kobe Niku', 10, 9, '18 - 500 g pkgs.', 97, 29, 0, 0, 1);
+INSERT INTO products VALUES (10, 'Ikura', 9, 10, '12 - 200 ml jars', 31, 31, 0, 0, 0);
+
+1.
+
+SELECT product_id, product_name, unit_price 
+FROM products 
+WHERE unit_price < 20;
+
+2.
+
+SELECT product_id, product_name, unit_price 
+FROM products 
+WHERE unit_price BETWEEN  15 AND 25;
+
+3.
+
+SELECT product_name, unit_price 
+FROM Products 
+WHERE unit_price > (SELECT  AVG(unit_price) FROM Products);
+
+4.
+
+SELECT product_name,unit_price
+FROM products
+ORDER BY unit_price desc limit 5
+
+SELECT product_name,unit_price
+FROM products
+ORDER BY unit_price desc limit 10;
+
+5.
+
+select sum(discontinued) as discontinued , (count(*)-sum(discontinued)) as continued from products
+
+6.
+
+SELECT product_name, units_in_stock, units_on_order
+FROM products
+WHERE units_in_stock < units_on_order;

@@ -1,0 +1,226 @@
+CREATE TABLE salesman(
+	id SERIAL PRIMARY KEY,
+	name varchar(30) NOT NULL,
+	city varchar(30) NOT NULL,
+	commission int
+);
+
+CREATE TABLE customer(
+	id SERIAL PRIMARY KEY,
+	customer_name varchar(30) NOT NULL,
+	city varchar(30) NOT NULL,
+	grade int,
+	salesman_id int,
+	FOREIGN KEY (salesman_id) REFERENCES salesman(id)
+);
+
+CREATE TABLE orders(
+	order_no SERIAL PRIMARY KEY,
+	purch_amt int,
+	order_date date,
+	customer_id int,
+	salesman_id int,
+	FOREIGN KEY (customer_id) REFERENCES customer(id),
+	FOREIGN KEY (salesman_id) REFERENCES salesman(id)
+);
+
+insert into salesman (name, city, commission) 
+values ('Goldi', 'Philippines', 12),
+('Gilbert', 'Indonesia', 8),
+('Antoni', 'Indonesia', 8),
+('Nisse', 'Netherlands', 12),
+('Rikki', 'Ukraine', 15),
+('Batholomew', 'Japan', 13),
+('Donia', 'United States', 8),
+('Gustavo', 'Indonesia', 13),
+('Katlin', 'Indonesia', 15),
+('Harlen', 'Vietnam', 12),
+('Jakob', 'Ukraine', 12),
+('Court', 'United States', 14),
+('Joya', 'Brazil', 9),
+('Rani', 'Greece', 13),
+('Leone', 'China', 9),
+('Meagan', 'Canada', 10),
+('Forrest', 'China', 9),
+('Gabrielle', 'China', 13),
+('Duff', 'China', 9),
+('Juliette', 'Zimbabwe', 9),
+ ('James Hoog', 'New York', 15),
+('Nail Knite', 'Paris' ,13),
+('Pit Alex','London', 11),
+('Mc Lyon', 'Paris' ,14),
+('Paul Adam', 'Rome' , 13);
+
+insert into customer (customer_name, city, grade, salesman_id) 
+values ('Benoite', 'Indonesia', 502, 14),
+('Minnnie', 'China', 854, 15),
+('Sybilla', 'France', 324, 16),
+('Ebonee', 'Indonesia', 192, 17),
+('Nowell', 'Croatia', 618, 18),
+('Chlo', 'Russia', 941, 19),
+('Richart', 'Czech Republic', 913, 20),
+('Felipe', 'Portugal', 878, 1),
+('Susannah', 'Thailand', 287, 2),
+('Germaine', 'Uganda', 641, 3),
+('Fanechka', 'El Salvador', 847, 4),
+('Liane', 'Russia', 128, 5),
+('Lori', 'China', 783, 6),
+('Lazare', 'Indonesia', 884, 7),
+('Dominga', 'South Africa', 290, 8),
+('Parrnell', 'Chile', 194, 9),
+('Tadio', 'China', 610, 10),
+('Vincent', 'Russia', 135, 11),
+('Orelia', 'Russia', 233, 12),
+('Tadio', 'india', 333, 13),
+('Nick Rimando' ,'New York',  100 ,21),
+('Brad Davis',  'New York' , 200, 22),
+('Graham Zusi', 'California' ,200 ,23),
+('Julian Green', 'London' , 300, 23),
+('Fabian Johnson' ,'Paris' , 300, 25),
+('Geoff Cameron', 'Berlin',  100, 26);
+
+insert into orders (purch_amt, order_date, customer_id, salesman_id) 
+values (2394, '2023-07-09',14, 2),
+(1813, '2023-11-11',15, 5),
+(737, '2023-07-17',16, 6),
+(354, '2023-02-11', 17, 7),
+(2418, '2023-01-27', 18, 8),
+(1784, '2023-09-22', 19, 9),
+(2439, '2023-05-16', 20, 11),
+(1457, '2023-05-26', 11, 1),
+(356, '2024-01-09', 12,2),
+(912, '2023-11-04', 13,3),
+(1662, '2023-11-06', 10, 14),
+(2524, '2023-11-21', 5, 15),
+(711, '2023-11-07', 6, 16),
+(104, '2023-12-22', 7, 17),
+(1606, '2023-11-02', 8, 18),
+(2899, '2023-12-11', 9, 19),
+(981, '2023-02-27', 4,10),
+(1680, '2023-04-13', 1, 12),
+(878, '2023-08-16', 2, 13),
+(249, '2023-08-02', 3, 20),
+( 150, '2012-10-05', 5, 12),
+(270, '2012-09-10', 1, 15),
+( 65 ,'2012-10-05',12, 11),
+( 110, '2012-08-17', 19, 13),
+( 948, '2012-09-10', 15, 12),
+( 2400, '2012-07-27', 17, 11);
+
+1.
+
+select salesman.name, customer.customer_name, customer.city
+from salesman inner join customer on salesman.id=customer.salesman_id
+where salesman.city=customer.city;
+
+2.
+select orders.order_no, orders.purch_amt, customer.customer_name, customer.city
+from orders inner join customer on orders.customer_id=customer.id
+where purch_amt BETWEEN 500 AND 2000;
+
+3.
+select customer_name, customer.city, salesman.name AS salesman_name, salesman.commission
+from salesman inner join customer on salesman.id=customer.salesman_id;
+
+4.
+select customer.customer_name, customer.city, salesman.name AS salesman_name, salesman.commission
+from salesman inner join customer on salesman.id=customer.salesman_id
+where commission > 12;
+
+5.
+select customer.customer_name, customer.city as c_city, salesman.name AS salesman_name, salesman.city as s_city, salesman.commission
+from salesman inner join customer on salesman.id=customer.salesman_id
+where salesman.city != customer.city AND commission > 12;
+
+6.
+select orders.order_no, orders.order_date, orders.purch_amt, customer.customer_name, customer.grade, salesman.name AS salesman_name, salesman.commission
+from orders 
+inner join customer on orders.customer_id=customer.id 
+inner join salesman on orders.salesman_id=salesman.id;
+
+7.
+select salesman.id as s_id, salesman.name as salesman_name, salesman.city, salesman.commission, customer.id as c_id, customer_name, customer.city, customer.grade, orders.order_no, purch_amt, order_date
+from ((salesman inner join customer on salesman.id=customer.salesman_id) inner join orders on customer.id=orders.customer_id);
+
+8.
+select customer.id, customer_name, customer.city as c_city, customer.grade, salesman.name as salesman_name, salesman.city as s_city
+from salesman inner join customer on salesman.id=customer.salesman_id
+order by customer.id;
+
+9.
+select customer.id, customer_name, customer.city as c_city, customer.grade, salesman.name as salesman_name, salesman.city as s_city
+from salesman inner join customer on salesman.id=customer.salesman_id
+where grade > 300
+order by customer.id;
+
+10.
+select customer.customer_name , customer.city , orders.order_no , orders.order_date , orders.purch_amt
+from customer left join orders on customer.id = orders.customer_id
+order by order_date;
+
+11.
+select customer.customer_name , customer.city , orders.order_no , orders.order_date , orders.purch_amt , salesman.name as Salesman_name , salesman.commission
+from customer
+left join orders on customer.id = orders.customer_id
+left join salesman on customer.salesman_id = salesman.id
+
+12.
+select salesman.id, salesman.name as salesman_name, salesman.city, salesman.commission
+from salesman 
+left join customer on salesman.id=customer.salesman_id
+order by id;
+
+13.
+select salesman.name, customer.customer_name, customer.city as c_city, customer.grade, orders.order_no, orders.order_date, orders.purch_amt
+from salesman 
+left join customer on salesman.id=customer.salesman_id
+left join orders on salesman.id=orders.salesman_id;
+
+14.
+SELECT salesman.name as salesman, customer.customer_name, customer.city as c_city, grade, order_no, order_date,purch_amt
+FROM customer 
+RIGHT JOIN salesman ON customer.salesman_id=salesman.id
+LEFT JOIN orders ON customer.id=orders.customer_id
+WHERE purch_amt > 2000 
+AND grade IS NOT NULL;
+
+15.
+SELECT salesman.name as salesman, customer.customer_name, customer.city as c_city, grade, order_no, order_date,purch_amt
+FROM customer 
+RIGHT JOIN salesman ON customer.salesman_id=salesman.id
+LEFT JOIN orders ON customer.id=orders.customer_id
+WHERE purch_amt > 2000 
+AND grade IS NOT NULL;
+
+16.
+select customer.customer_name, customer.city, orders.order_no, orders.order_date, orders.purch_amt
+from customer 
+full join orders on customer.id=orders.customer_id;
+
+17.
+select salesman.name as salesman, salesman.city as salesman_city, customer_name, customer.city as customer_city, grade 
+from salesman
+cross join customer;
+
+18.
+select salesman.name as salesman, salesman.city as salesman_city, customer_name, customer.city as customer_city, grade 
+from salesman
+cross join customer
+where salesman.city = customer.city;
+
+19.
+select salesman.name as salesman, salesman.city as salesman_city, customer_name, customer.city as customer_city, grade 
+from salesman
+cross join customer
+where salesman.city is not null
+and grade is not null;
+
+20.
+select salesman.name as salesman, salesman.city as salesman_city, customer_name, customer.city as customer_city, grade 
+from salesman
+cross join customer
+where salesman.city is not null
+and salesman.city <> customer.city;
+
+
+
