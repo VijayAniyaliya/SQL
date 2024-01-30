@@ -12,14 +12,14 @@ CREATE TABLE Category(
 
 CREATE TABLE products (
     product_id int NOT NULL,
-    product_name character varying(40) NOT NULL,
+    product_name varchar(40) NOT NULL,
     supplier_id int,
     category_id int,
-    quantity_per_unit character varying(20),
+    quantity_per_unit varchar(20),
     unit_price real,
     units_in_stock int,
-    units_on_order smallint,
-    reorder_level smallint,
+    units_on_order int,
+    reorder_level int,
     discontinued bool NOT NULL,
 	PRIMARY KEY (product_id),
     FOREIGN KEY (supplier_id) REFERENCES Supplier(Supplier_ID)
@@ -100,3 +100,24 @@ select sum(discontinued) as discontinued , (count(*)-sum(discontinued)) as conti
 SELECT product_name, units_in_stock, units_on_order
 FROM products
 WHERE units_in_stock < units_on_order;
+
+
+
+CREATE PROCEDURE EmpSalesByCountry 
+	-- Add the parameters for the stored procedure here
+	@EmpID INT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+
+	SELECT o.ShipCountry, SUM(d.OrderAmt) AS Sales FROM Orders o
+	INNER JOIN (SELECT OrderID, SUM(UnitPrice*Quantity) AS OrderAmt FROM [dbo].[Order Details] GROUP BY OrderID) d ON o.OrderID = d.OrderID
+	GROUP BY o.EmployeeID, o.ShipCountry
+	HAVING o.EmployeeID = @EmpID ORDER BY o.EmployeeID;
+
+    -- Insert statements for procedure here
+	
+END
+GO
+

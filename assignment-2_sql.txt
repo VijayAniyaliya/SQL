@@ -24,7 +24,7 @@ CREATE TABLE orders(
 	FOREIGN KEY (salesman_id) REFERENCES salesman(id)
 );
 
-insert into salesman (name, city, commission) 
+ into salesman (name, city, commission) 
 values ('Goldi', 'Philippines', 12),
 ('Gilbert', 'Indonesia', 8),
 ('Antoni', 'Indonesia', 8),

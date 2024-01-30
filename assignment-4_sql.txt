@@ -1,0 +1,144 @@
+1.
+create procedure sp_ValidateFreight
+  
+    @CustomerID nvarchar(5),
+   
+    @AverageFreight money output
+as
+begin
+   select @AverageFreight = AVG(Freight) 
+   from Orders
+   where CustomerID = @CustomerID
+end
+
+create or alter  trigger trg
+on orders
+for insert,update
+as 
+begin
+
+declare @current_freight int
+select @current_freight=freight from inserted
+declare @customerID nvarchar(5)
+select @customerID=customerID from inserted
+declare @avg_freight int
+exec sp_ValidateFreight @customerID , @avg_freight output
+if @avg_freight>@current_freight
+BEGIN
+        PRINT 'purchase amount is below the Average Purchase Amount';
+END
+else 
+BEGIN
+PRINT 'the data is not inserted';
+	Rollback Transaction;
+END;
+end
+
+INSERT INTO Orders(CustomerID,Freight)
+	VALUES ('VINET', 20 );
+
+select * from orders;
+
+
+2.
+CREATE OR ALTER PROCEDURE EmpSalesByCountry 
+	
+	@EmpID INT
+AS
+BEGIN
+
+	SELECT  o.ShipCountry, SUM(d.OrderAmt) AS Sales FROM Orders o
+	INNER JOIN (SELECT OrderID, SUM(UnitPrice*Quantity) AS OrderAmt FROM [dbo].[Order Details] GROUP BY OrderID) d ON o.OrderID = d.OrderID
+	GROUP BY o.EmployeeID, o.ShipCountry
+	HAVING o.EmployeeID = @EmpID ORDER BY o.EmployeeID;
+
+
+	
+END
+GO
+
+EXEC EmpSalesByCountry @EmpID=5;
+
+
+3.
+CREATE PROCEDURE SalesByYear
+	
+AS
+BEGIN
+
+	SELECT YEAR(o.OrderDate) AS OrderYear, SUM(d.OrderAmt) AS Sales FROM Orders o
+	INNER JOIN (SELECT OrderID, SUM(UnitPrice*Quantity) AS OrderAmt FROM [dbo].[Order Details] GROUP BY OrderID) d ON o.OrderID = d.OrderID
+	GROUP BY  YEAR(o.OrderDate);
+ 
+END
+GO
+
+EXEC SalesByYear;
+
+4.
+CREATE OR ALTER PROCEDURE SalesByCategory
+	
+AS
+BEGIN
+
+	SELECT p.CategoryID, SUM(o.OrderAmt) FROM Products p
+	INNER JOIN (SELECT ProductID ,SUM(UnitPrice*Quantity) AS OrderAmt FROM [dbo].[Order Details] GROUP BY ProductID) o ON p.ProductID = o.ProductID
+	GROUP BY p.CategoryID;
+
+END
+
+
+EXEC SalesByCategory;
+
+5.
+CREATE OR ALTER PROCEDURE MostExpensiveProducts
+	
+AS
+BEGIN
+
+	SELECT TOP 10 ProductName, UnitPrice FROM Products 
+	order by UnitPrice DESC;
+
+END
+
+
+EXEC MostExpensiveProducts;
+
+6.
+CREATE OR ALTER PROCEDURE InsertOrderDetails 
+	(@OrderID INT ,
+	@ProductID INT ,
+	@UnitPrice REAL ,
+	@Quantity INT ,
+	@Discount REAL)
+AS
+BEGIN
+	
+	INSERT INTO [dbo].[Order Details] VALUES(@OrderID,@ProductID,@UnitPrice,@Quantity,@Discount);
+
+END
+
+
+EXEC InsertOrderDetails @OrderID =10248 , @ProductID =12 , @UnitPrice =11 , @Quantity =11 , @Discount = 0.01;
+
+7.
+CREATE or ALTER PROCEDURE UpdateOrderDetails (
+ 
+@OrderId INT ,
+@ProductID INT ,
+@UnitPrice REAL ,
+@Quantity INT ,
+@Discount REAL )
+
+AS
+BEGIN
+
+Update [dbo].[Order Details] 
+ SET UnitPrice=@UnitPrice, Quantity=@Quantity, Discount=@Discount 
+Where  OrderID = @OrderID AND ProductID = @ProductID;
+
+
+END 
+GO
+
+EXEC UpdateOrderDetails @OrderID =10248 , @ProductID =12 , @UnitPrice =3 , @Quantity =6 , @Discount = 0.06;
